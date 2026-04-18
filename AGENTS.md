@@ -169,4 +169,58 @@ These rules summarize the currently approved customization direction for this re
 - This repository is currently intended to be previewed locally with Ruby/Jekyll rather than Docker.
 - The user may keep the working copy in OneDrive for editing, but local preview/build behavior can be less reliable there depending on permissions and file-watching behavior.
 - If local commands are referenced, prefer the user’s shell helpers:
-  - `alfolio` to start the site
+  - `alf` or `alfolio` to start the site
+  - `alfstop` to stop the local server
+
+### Git and Push Workflow
+
+- The canonical GitHub repository for deployment is:
+  - `origin = https://github.com/youqiangao/youqiangao.github.io.git`
+- The original al-folio template repository should not be used as the push target for this personal site.
+- Prefer pushing from a plain Terminal session rather than the VS Code Git UI.
+- In this repository, VS Code background Git activity can interfere with first-time pushes or remote setup.
+- If a push fails from VS Code with errors such as:
+  - `RPC failed`
+  - `curl 16 Error in the HTTP2 framing layer`
+  - `fatal: the remote end hung up unexpectedly`
+  then retry from Terminal before assuming the repository is broken.
+- The preferred push workflow is:
+  1. `git add .`
+  2. `git commit -m "message"`
+  3. `git push`
+- If GitHub push transport is unstable, configure Git to use HTTP/1.1:
+
+```bash
+git config --global http.version HTTP/1.1
+```
+
+- If needed, additional fallback settings that are known to help are:
+
+```bash
+git config --global http.postBuffer 524288000
+git config --global core.compression 0
+```
+
+- When troubleshooting first push behavior, close VS Code and retry the push from Terminal before taking more invasive recovery steps.
+
+### Deployment Rules
+
+- This site is deployed as a GitHub Pages personal site for:
+  - `https://youqiangao.github.io`
+- `_config.yml` must stay aligned with personal-site deployment:
+  - `url: https://youqiangao.github.io`
+  - `baseurl:` must remain empty
+- The repository name for deployment is expected to be:
+  - `youqiangao.github.io`
+- Deployment is triggered automatically by pushing to `main` or `master`.
+- The repository uses the existing workflow in [deploy.yml](.github/workflows/deploy.yml) to build the site and publish the generated `_site` output to the `gh-pages` branch.
+- GitHub Pages should be configured to serve from:
+  - `Deploy from a branch`
+  - branch `gh-pages`
+  - folder `/ (root)`
+- For deployment health, the important workflow signals are:
+  - `Deploy site`
+  - `pages build and deployment`
+- Other workflows such as Prettier, CV rendering, Lighthouse, or auxiliary checks may fail without blocking the main academic homepage from being published.
+- After a successful push, allow a short delay for GitHub Pages propagation and then verify:
+  - `https://youqiangao.github.io`
